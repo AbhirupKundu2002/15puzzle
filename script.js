@@ -88,9 +88,9 @@ function adding_event_listeners_on_drawing_board() {
         document.getElementById(id).addEventListener('click', function () {
             let emptytile = (document.getElementsByClassName('empty'))[0];
             let emptyid = emptytile.id;
-            let emptyrow = emptyid[3], emptycol = emptyid[10];
+            let emptyrow = emptyid[3], emptycolumn = emptyid[10];
             let currentrow = (this.id)[3], currentcolumn = (this.id)[10];
-            if (currentrow == emptyrow || currentcolumn == emptycol) {
+            if (currentrow == emptyrow && (Math.abs(currentcolumn-emptycolumn)==1)||(currentcolumn == emptycolumn && (Math.abs(currentrow-emptyrow)==1))){
                 swaptiles(id,emptyid);
             }
             ifwon(colorchanger());
@@ -103,33 +103,33 @@ function adding_event_listeners_on_drawing_board() {
     document.onkeydown = function (e) {
         let emptytile = (document.getElementsByClassName('empty'))[0];
         let emptyid = emptytile.id;
-        let emptyrow = emptyid[3], emptycol = emptyid[10];
+        let emptyrow = emptyid[3], emptycolumn = emptyid[10];
         switch (e.code) {
             case "ArrowLeft":
-                if (parseInt(emptycol) + 1 <= width) {
-                    let swapid = "row" + emptyrow + "column" + String(parseInt(emptycol) + 1);
+                if (parseInt(emptycolumn) + 1 <= width) {
+                    let swapid = "row" + emptyrow + "column" + String(parseInt(emptycolumn) + 1);
                     swaptiles(emptyid, swapid);
                     ifwon(colorchanger());
                 }
                 break;
             case "ArrowUp":
                 if (parseInt(emptyrow) + 1 <= height) {
-                    let swapid = "row" + String(parseInt(emptyrow) + 1) + "column" + emptycol;
+                    let swapid = "row" + String(parseInt(emptyrow) + 1) + "column" + emptycolumn;
                     swaptiles(emptyid, swapid);
                     ifwon(colorchanger());
                 }
 
                 break;
             case "ArrowRight":
-                if (parseInt(emptycol) - 1 > 0) {
-                    let swapid = "row" + emptyrow + "column" + String(parseInt(emptycol) - 1);
+                if (parseInt(emptycolumn) - 1 > 0) {
+                    let swapid = "row" + emptyrow + "column" + String(parseInt(emptycolumn) - 1);
                     swaptiles(emptyid, swapid);
                     ifwon(colorchanger());
                 }
                 break;
             case "ArrowDown":
                 if (parseInt(emptyrow) - 1 > 0) {
-                    let swapid = "row" + String(parseInt(emptyrow) - 1) + "column" + emptycol;
+                    let swapid = "row" + String(parseInt(emptyrow) - 1) + "column" + emptycolumn;
                     swaptiles(emptyid, swapid);
                     ifwon(colorchanger());
                 }
@@ -193,25 +193,25 @@ function ifwon(number) {
         document.getElementById("won").innerHTML = "Congratulations! You have successfully finished this game. <br> <div>Number of moves taken : <span class='result'>" + moves + "</span></div><div>Time taken : <span class='result'>" + document.getElementById("time").innerText + "</span> mins</div>";
         document.getElementById("board-container").style.fontSize = "3rem";
         
-        leaderboardupdate(parseInt(time),move);
+        leaderboardupdate(parseInt(time),moves);
 
 
     }
 }
-function leaderboardupdate(time , move){
+function leaderboardupdate(time , moves){
     if(localStorage.getItem('itemJson')==null){
         itemJsonArrey = [];
-        itemJsonArrey.push({time:time,move:move});
+        itemJsonArrey.push({time:time,move:moves});
         localStorage.setItem('itemJson',JSON.stringify(itemJsonArrey));
     }
     else{
         itemJsonArreyStr=localStorage.getItem('itemJson');
         itemJsonArrey=JSON.parse(itemJsonArreyStr);
-        itemJsonArrey.push({time:time,move:move});
+        itemJsonArrey.push({time:time,move:moves});
         itemJsonArrey.sort(function(a, b) {          
             if (a.time === b.time) {
-               // moves is only important when times are the same
-               return a.move - b.move;
+               
+               return a.moves - b.moves;
             }
             return a.time > b.time ? 1 : -1;
          });
@@ -222,11 +222,11 @@ function leaderboardupdate(time , move){
     tableBody=document.getElementById("tableBody");
     let str="";
     itemJsonArrey.forEach((element,index) => {
-        console.log(element.time+" "+element.move);
+        console.log(element.time+" "+element.moves);
         str+=`
         <tr>
         <th scope="col">${element.time}</th>
-        <th scope="col">${element.move}</th>
+        <th scope="col">${element.moves}</th>
       </tr>`;
     });
     tableBody.innerHTML = str;
